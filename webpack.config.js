@@ -44,8 +44,12 @@ module.exports = {
           {
             loader: 'html-loader',
             options: {
-              attrs: ['img:src', 'link:href'],
-              root: theme
+              sources: {
+                list: [
+                  { tag: 'img', attribute: 'src', type: 'src' },
+                  { tag: 'link', attribute: 'href', type: 'src' }
+                ]
+              }
             }
           }
         ]
@@ -88,13 +92,10 @@ module.exports = {
       },
       {
         test: /\.(svg|png|ico)$/,
-        use: [
-          'file-loader'
-        ]
-      },
-      {
-        test: /worker\.js$/,
-        use: { loader: 'worker-loader' }
+        type: 'asset/resource',
+        generator: {
+          filename: '[name][ext]'
+        }
       },
       {
         enforce: 'post',

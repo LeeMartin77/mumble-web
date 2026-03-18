@@ -56,8 +56,7 @@
     "voice-activity-detection": "github:johni0702/voice-activity-detection#9f8bd90",
     "web-audio-buffer-queue": "^1.1.0",
     "webpack": "^5.105.4",
-    "webpack-cli": "^7.0.2",
-    "worker-loader": "^3.0.8"
+    "webpack-cli": "^7.0.2"
   },
   "optionalDependencies": {}
 }

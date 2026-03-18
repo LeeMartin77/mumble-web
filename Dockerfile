@@ -1,9 +1,10 @@
-FROM node:18-bullseye-slim
+FROM node:20-bullseye-slim
 
 LABEL maintainer="Andreas Peters <support@aventer.biz>"
 
 # Install required system packages
 RUN apt-get update && apt-get install -y \
+    git \
     tini \
     websockify \
     && rm -rf /var/lib/apt/lists/*
@@ -32,5 +33,5 @@ EXPOSE 8080
 ENV MUMBLE_SERVER=mumble.aventer.biz:64738
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD websockify --ssl-target --web=/home/node/dist 8080 "$MUMBLE_SERVER"
+CMD ["sh", "-c", "websockify --ssl-target --web=/home/node/dist 8080 \"$MUMBLE_SERVER\""]
 

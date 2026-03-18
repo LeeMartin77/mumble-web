@@ -4,7 +4,6 @@ import EventEmitter from 'events'
 import { Writable, PassThrough } from 'stream'
 import toArrayBuffer from 'to-arraybuffer'
 import ByteBuffer from 'bytebuffer'
-import Worker from './worker'
 
 /**
  * Creates proxy MumbleClients to a real ones running on a web worker.
@@ -28,7 +27,7 @@ class WorkerBasedMumbleConnector {
 
   _postMessage (msg, transfer) {
     if (!this._worker) {
-      this._worker = new Worker()
+      this._worker = new Worker(new URL('./worker.js', import.meta.url))
       this._worker.addEventListener('message', this._onMessage.bind(this))
     }
     try {

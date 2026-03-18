@@ -1,16 +1,23 @@
-FROM alpine:edge
+FROM node:18-bullseye-slim
 
 LABEL maintainer="Andreas Peters <support@aventer.biz>"
 
+# Install required system packages
+RUN apt-get update && apt-get install -y \
+    tini \
+    websockify \
+    && rm -rf /var/lib/apt/lists/*
+
+# Ensure directories exist and have correct ownership
+RUN mkdir -p /home/node && \
+    mkdir -p /home/node/.npm-global && \
+    mkdir -p /home/node/app && \
+    chown -R node:node /home/node
+
 COPY ./ /home/node
 
-RUN echo http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
-    apk add --no-cache git nodejs npm tini websockify && \
-    adduser -D -g 1001 -u 1001 -h /home/node node && \
-    mkdir -p /home/node && \
-    mkdir -p /home/node/.npm-global && \
-    mkdir -p /home/node/app  && \
-    chown -R node: /home/node 
+# Fix ownership of copied files
+RUN chown -R node:node /home/node
 
 USER node
 
@@ -19,17 +26,11 @@ ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 
 RUN cd /home/node && \
     npm install && \
-    npm run build 
-
-USER root
-
-RUN apk del gcc git
-
-USER node
+    npm run build
 
 EXPOSE 8080
 ENV MUMBLE_SERVER=mumble.aventer.biz:64738
 
-ENTRYPOINT ["/sbin/tini", "--"]
+ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD websockify --ssl-target --web=/home/node/dist 8080 "$MUMBLE_SERVER"
 
